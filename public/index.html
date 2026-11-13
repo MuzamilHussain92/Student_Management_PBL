@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Campus — Student Management</title>
+
+  <style>
+    :root {
+      --bg: #f5f6fa;
+      --surface: #fff;
+      --text: #192339;
+      --muted: #748097;
+      --border: #e8ebf2;
+      --primary: #635bff;
+      --danger: #c13c51;
+      font-family: Inter, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    button:disabled { opacity: .55; cursor: wait; }
+    button, input, select { transition: .18s ease; }
+    :focus-visible { outline: 3px solid #b5b1ff; outline-offset: 3px; }
+
+    .sidebar {
+      position: fixed;
+      inset: 0 auto 0 0;
+      width: 230px;
+      background: #151d30;
+      color: white;
+      padding: 32px 22px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      background: var(--primary);
+      font-weight: 800;
+      font-size: 23px;
+    }
+    .brand strong { font-size: 23px; letter-spacing: -.8px; }
+    .sidebar-label {
+      color: #8792ab;
+      font-size: 11px;
+      letter-spacing: 1.8px;
+      margin: 48px 12px 15px;
+    }
+    .nav-item {
+      padding: 14px;
+      border-radius: 10px;
+      background: #ffffff10;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .nav-dot { width: 8px; height: 8px; background: #9b96ff; border-radius: 50%; }
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 20px 12px 0;
+      border-top: 1px solid #ffffff14;
+      color: #98a3ba;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    main { margin-left: 230px; padding: 38px; max-width: 1800px; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 1.8px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    h1 { margin: 0; font-size: 30px; letter-spacing: -1px; }
+    .subtitle { margin: 9px 0 0; color: var(--muted); font-size: 14px; }
+    .date { color: var(--muted); font-size: 13px; }
+
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 30px 0; }
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 23px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .stat-label { color: var(--muted); font-size: 13px; }
+    .stat-value { display: block; font-size: 32px; font-weight: 750; margin-top: 8px; }
+    .stat-icon {
+      height: 48px;
+      width: 48px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: #efedff;
+      color: var(--primary);
+      font-size: 22px;
+    }
+    .stat:nth-child(2) .stat-icon { background: #e9f7f2; color: #239775; }
+    .stat:nth-child(3) .stat-icon { background: #fff3e5; color: #cc8a32; }
+
+    .workspace { display: grid; grid-template-columns: 310px minmax(0, 1fr); gap: 24px; align-items: start; }
+    .panel { background: white; border: 1px solid var(--border); border-radius: 18px; overflow: hidden; }
+    .panel-head { padding: 24px; border-bottom: 1px solid var(--border); }
+    h2 { font-size: 17px; margin: 0; letter-spacing: -.3px; }
+    .panel-head p { font-size: 12px; color: var(--muted); margin: 7px 0 0; }
+    form { padding: 24px; }
+    label { display: block; font-size: 12px; font-weight: 650; margin: 0 0 8px; }
+    .field { margin-bottom: 20px; }
+    input, select {
+      width: 100%;
+      border: 1px solid #dfe4ed;
+      background: #fcfcfe;
+      border-radius: 9px;
+      padding: 11px 12px;
+      color: var(--text);
+      font-size: 13px;
+    }
+    input:focus, select:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px #635bff12; }
+    input::placeholder { color: #a0a8b8; }
+    .button {
+      border: 0;
+      border-radius: 9px;
+      padding: 11px 15px;
+      font-size: 13px;
+      font-weight: 650;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .primary { background: var(--primary); color: white; }
+    .primary:hover { background: #5148e8; }
+    .secondary { background: #f0f2f8; color: #566078; }
+    .secondary:hover { background: #e6e9f2; }
+    .form-actions { display: grid; gap: 10px; }
+    .form-hint { font-size: 11px; color: var(--muted); text-align: center; margin: 15px 0 0; }
+
+    .records-head { display: flex; justify-content: space-between; align-items: center; gap: 14px; }
+    .badge { background: #efedff; color: var(--primary); padding: 4px 8px; border-radius: 6px; font-size: 11px; margin-left: 6px; }
+    .toolbar { padding: 18px 24px; display: flex; gap: 12px; border-bottom: 1px solid var(--border); }
+    .toolbar input { flex: 1; min-width: 0; }
+    .toolbar select { width: 175px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; white-space: nowrap; }
+    th {
+      text-align: left;
+      background: #fafbfe;
+      padding: 13px 20px;
+      color: var(--muted);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      font-weight: 700;
+    }
+    td { padding: 18px 20px; border-top: 1px solid #f0f2f6; font-size: 12px; }
+    tbody tr:hover { background: #fcfcff; }
+    .student { display: flex; align-items: center; gap: 11px; }
+    .avatar {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
+      background: #efedff;
+      color: var(--primary);
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      font-weight: 750;
+    }
+    .student-name { display: block; font-weight: 650; }
+    .student-id { display: block; color: var(--muted); margin-top: 4px; font-size: 10px; }
+    .semester { background: #edf7f2; color: #258062; border-radius: 6px; padding: 5px 8px; font-size: 11px; }
+    .row-actions { display: flex; gap: 7px; }
+    .row-actions button { border: 0; padding: 7px 9px; border-radius: 6px; font-size: 11px; font-weight: 650; }
+    .edit { background: #efedff; color: var(--primary); }
+    .delete { background: #fff0f2; color: var(--danger); }
+    .empty { text-align: center; padding: 60px 20px; color: var(--muted); white-space: normal; }
+    .table-footer { padding: 16px 24px; color: var(--muted); font-size: 11px; border-top: 1px solid var(--border); }
+    .notice { margin-top: 20px; padding: 13px 16px; border-radius: 10px; font-size: 13px; }
+    .notice:empty { display: none; }
+    .notice.success { background: #e8f6ef; color: #22744f; }
+    .notice.error { background: #fff0f2; color: #b63149; }
+
+    @media (min-width: 1450px) {
+      .workspace { grid-template-columns: 340px minmax(0, 1fr); }
+    }
+    @media (max-width: 1150px) {
+      .sidebar { width: 185px; padding: 28px 16px; }
+      main { margin-left: 185px; padding: 26px; }
+      .workspace { grid-template-columns: 1fr; }
+      form { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
+      .form-actions, .form-hint { grid-column: 1 / -1; }
+      .form-actions { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 700px) {
+      .sidebar { position: static; width: 100%; padding: 18px 22px; }
+      .sidebar-label, .nav-item, .sidebar-footer { display: none; }
+      main { margin-left: 0; padding: 24px 16px; }
+      h1 { font-size: 25px; }
+      .date { display: none; }
+      .stats { gap: 10px; margin: 22px 0; }
+      .stat { padding: 16px 12px; }
+      .stat-icon { display: none; }
+      .stat-label { font-size: 10px; }
+      .stat-value { font-size: 25px; }
+      .panel-head, form { padding: 20px; }
+      form { display: block; }
+      .form-actions { display: grid; grid-template-columns: 1fr; }
+      .toolbar { padding: 16px; flex-direction: column; }
+      .toolbar select { width: 100%; }
+    }
+  </style>
+</head>
+
+<body>
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="logo">C</span>
+      <strong>campus.</strong>
+    </div>
+    <p class="sidebar-label">WORKSPACE</p>
+    <div class="nav-item" aria-current="page">
+      <span class="nav-dot"></span> Student directory
+    </div>
+    <div class="sidebar-footer">
+      Student Management<br>
+      Your academic workspace
+    </div>
+  </aside>
+
+  <main>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Student directory</p>
+        <h1>A little more organized.</h1>
+        <p class="subtitle">Manage student records from one simple workspace.</p>
+      </div>
+      <div class="date" id="today"></div>
+    </header>
+
+    <div id="notice" class="notice" role="status" aria-live="polite"></div>
+
+    <section class="stats" aria-label="Directory statistics">
+      <div class="stat">
+        <div><span class="stat-label">Total students</span><strong class="stat-value" id="total">—</strong></div>
+        <span class="stat-icon" aria-hidden="true">◉</span>
+      </div>
+      <div class="stat">
+        <div><span class="stat-label">Departments</span><strong class="stat-value" id="departments">—</strong></div>
+        <span class="stat-icon" aria-hidden="true">▦</span>
+      </div>
+      <div class="stat">
+        <div><span class="stat-label">Semesters represented</span><strong class="stat-value" id="semesters">—</strong></div>
+        <span class="stat-icon" aria-hidden="true">◷</span>
+      </div>
+    </section>
+
+    <div class="workspace">
+      <section class="panel">
+        <div class="panel-head">
+          <h2 id="formTitle">Add a student</h2>
+          <p id="formDescription">Create a new student record.</p>
+        </div>
+
+        <form id="studentForm">
+          <div class="field">
+            <label for="name">Full name</label>
+            <input id="name" required maxlength="100" placeholder="e.g. Ali Ahmed" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="rollNo">Roll number</label>
+            <input id="rollNo" required maxlength="30" placeholder="e.g. K22SW001" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="department">Department</label>
+            <input id="department" required maxlength="100" placeholder="e.g. Software Engineering" list="departmentSuggestions">
+            <datalist id="departmentSuggestions"></datalist>
+          </div>
+          <div class="field">
+            <label for="semester">Semester</label>
+            <select id="semester" required></select>
+          </div>
+          <div class="form-actions">
+            <button class="button primary" id="save" type="submit">＋ Add student</button>
+            <button class="button secondary" id="cancel" type="button">Clear form</button>
+          </div>
+          <p class="form-hint">All fields are required.</p>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head records-head">
+          <div>
+            <h2>All students <span id="recordCount" class="badge">0</span></h2>
+            <p>Your student records, in one place.</p>
+          </div>
+          <button class="button secondary" id="refresh" type="button">↻ Refresh</button>
+        </div>
+
+        <div class="toolbar">
+          <input id="search" type="search" aria-label="Search students" placeholder="Search name or roll number…">
+          <select id="departmentFilter" aria-label="Filter by department">
+            <option value="">All departments</option>
+          </select>
+        </div>
+
+        <div class="table-wrap">
+          <table aria-label="Student records">
+            <thead>
+              <tr>
+                <th scope="col">Student</th>
+                <th scope="col">Roll number</th>
+                <th scope="col">Department</th>
+                <th scope="col">Semester</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="rows">
+              <tr><td colspan="5" class="empty">Loading student records…</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div id="tableFooter" class="table-footer">Connecting to your directory…</div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const $ = id => document.getElementById(id);
+
+    let students = [];
+    let editing = null;
+    let saving = false;
+    let loading = false;
+
+    $('today').textContent = new Date().toLocaleDateString(undefined, {
+      weekday: 'long',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+
+    for (let i = 1; i <= 10; i++) {
+      $('semester').add(new Option(`Semester ${i}`, i));
+    }
+
+    function notify(message, error = false) {
+      $('notice').textContent = message;
+      $('notice').className = `notice ${error ? 'error' : 'success'}`;
+    }
+
+    async function api(url, options = {}) {
+      const headers = { ...options.headers };
+
+      if (options.body !== undefined) {
+        headers['Content-Type'] = 'application/json';
+      }
+
+      const response = await fetch(url, { ...options, headers });
+      const text = await response.text();
+      let data = null;
+
+      if (text) {
+        try {
+          data = JSON.parse(text);
+        } catch {
+          throw new Error('The server returned an unexpected response.');
+        }
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data?.details?.join(' ') ||
+          data?.error ||
+          `Request failed (${response.status}).`
+        );
+      }
+
+      return data;
+    }
+
+    function resetForm() {
+      editing = null;
+      $('studentForm').reset();
+      $('formTitle').textContent = 'Add a student';
+      $('formDescription').textContent = 'Create a new student record.';
+      $('save').textContent = '＋ Add student';
+      $('cancel').textContent = 'Clear form';
+    }
+
+    function setSaving(value) {
+      saving = value;
+      $('studentForm').querySelectorAll('input, select, button').forEach(el => {
+        el.disabled = value;
+      });
+      renderRows();
+
+      if (value) $('save').textContent = 'Saving…';
+      else $('save').textContent = editing ? 'Save changes' : '＋ Add student';
+    }
+
+    function refreshSummary() {
+      const departments = [...new Set(students.map(s => s.department))]
+        .sort((a, b) => a.localeCompare(b));
+
+      $('total').textContent = students.length;
+      $('departments').textContent = departments.length;
+      $('semesters').textContent = new Set(students.map(s => s.semester)).size;
+      $('recordCount').textContent = students.length;
+
+      const selected = $('departmentFilter').value;
+      $('departmentFilter').replaceChildren(new Option('All departments', ''));
+      $('departmentSuggestions').replaceChildren();
+
+      for (const department of departments) {
+        $('departmentFilter').add(new Option(department, department));
+
+        const option = document.createElement('option');
+        option.value = department;
+        $('departmentSuggestions').append(option);
+      }
+
+      if (departments.includes(selected)) {
+        $('departmentFilter').value = selected;
+      }
+    }
+
+    function editStudent(student) {
+      if (saving) return;
+
+      editing = student.id;
+
+      for (const key of ['name', 'rollNo', 'department', 'semester']) {
+        $(key).value = student[key];
+      }
+
+      $('formTitle').textContent = 'Edit student';
+      $('formDescription').textContent = `Updating record #${student.id}`;
+      $('save').textContent = 'Save changes';
+      $('cancel').textContent = 'Cancel editing';
+      $('studentForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      $('name').focus({ preventScroll: true });
+    }
+
+    async function deleteStudent(student, button) {
+      if (saving) return;
+      if (!confirm(`Delete ${student.name}'s record? This cannot be undone.`)) return;
+
+      button.disabled = true;
+      button.textContent = 'Deleting…';
+
+      try {
+        await api(`/api/students/${student.id}`, { method: 'DELETE' });
+        if (editing === student.id) resetForm();
+        notify(`${student.name}'s record was deleted.`);
+        await loadStudents();
+      } catch (error) {
+        notify(error.message, true);
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Delete';
+      }
+    }
+
+    function renderRows() {
+      const query = $('search').value.trim().toLowerCase();
+      const department = $('departmentFilter').value;
+
+      const filtered = students.filter(student => {
+        const matchesSearch =
+          student.name.toLowerCase().includes(query) ||
+          student.rollNo.toLowerCase().includes(query);
+
+        return matchesSearch &&
+          (!department || student.department === department);
+      });
+
+      const tbody = $('rows');
+      tbody.replaceChildren();
+
+      if (!filtered.length) {
+        const cell = tbody.insertRow().insertCell();
+        cell.colSpan = 5;
+        cell.className = 'empty';
+        cell.textContent = students.length
+          ? 'No students match your search. Try another name or department.'
+          : 'Your directory is ready. Add your first student to get started.';
+      }
+
+      for (const student of filtered) {
+        const row = tbody.insertRow();
+
+        const identity = document.createElement('div');
+        identity.className = 'student';
+
+        const avatar = document.createElement('span');
+        avatar.className = 'avatar';
+        avatar.setAttribute('aria-hidden', 'true');
+        avatar.textContent = student.name.trim().split(/\s+/)
+          .slice(0, 2).map(part => part[0]).join('').toUpperCase();
+
+        const details = document.createElement('div');
+        const name = document.createElement('span');
+        name.className = 'student-name';
+        name.textContent = student.name;
+
+        const id = document.createElement('span');
+        id.className = 'student-id';
+        id.textContent = `Student #${student.id}`;
+
+        details.append(name, id);
+        identity.append(avatar, details);
+        row.insertCell().append(identity);
+
+        row.insertCell().textContent = student.rollNo;
+        row.insertCell().textContent = student.department;
+
+        const semester = document.createElement('span');
+        semester.className = 'semester';
+        semester.textContent = `Semester ${student.semester}`;
+        row.insertCell().append(semester);
+
+        const actions = document.createElement('div');
+        actions.className = 'row-actions';
+
+        const edit = document.createElement('button');
+        edit.type = 'button';
+        edit.className = 'edit';
+        edit.textContent = 'Edit';
+        edit.disabled = saving;
+        edit.setAttribute('aria-label', `Edit ${student.name}`);
+        edit.onclick = () => editStudent(student);
+
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'delete';
+        remove.textContent = 'Delete';
+        remove.disabled = saving;
+        remove.setAttribute('aria-label', `Delete ${student.name}`);
+        remove.onclick = () => deleteStudent(student, remove);
+
+        actions.append(edit, remove);
+        row.insertCell().append(actions);
+      }
+
+      $('tableFooter').textContent =
+        `Showing ${filtered.length} of ${students.length} students`;
+    }
+
+    async function loadStudents() {
+      if (loading) return;
+
+      loading = true;
+      $('refresh').disabled = true;
+      $('refresh').textContent = 'Loading…';
+
+      try {
+        const data = await api('/api/students');
+        if (!Array.isArray(data)) throw new Error('Unexpected student data.');
+
+        students = data;
+        refreshSummary();
+        renderRows();
+      } catch (error) {
+        notify(`Could not load students. ${error.message}`, true);
+
+        if (!$('rows').dataset.loaded) {
+          const tbody = $('rows');
+          tbody.replaceChildren();
+          const cell = tbody.insertRow().insertCell();
+          cell.colSpan = 5;
+          cell.className = 'empty';
+          cell.textContent = 'Unable to load records. Check the server and click Refresh.';
+        }
+
+        $('tableFooter').textContent = 'Refresh failed. Records may be out of date.';
+      } finally {
+        loading = false;
+        $('refresh').disabled = false;
+        $('refresh').textContent = '↻ Refresh';
+      }
+
+      if (students.length || $('total').textContent !== '—') {
+        $('rows').dataset.loaded = 'true';
+      }
+    }
+
+    $('studentForm').addEventListener('submit', async event => {
+      event.preventDefault();
+      if (saving) return;
+
+      const id = editing;
+      const body = {
+        name: $('name').value.trim(),
+        rollNo: $('rollNo').value.trim(),
+        department: $('department').value.trim(),
+        semester: Number($('semester').value)
+      };
+
+      setSaving(true);
+
+      try {
+        await api(`/api/students${id ? `/${id}` : ''}`, {
+          method: id ? 'PUT' : 'POST',
+          body: JSON.stringify(body)
+        });
+
+        resetForm();
+        notify(id ? 'Student details updated.' : 'Student added to your directory.');
+        await loadStudents();
+      } catch (error) {
+        notify(error.message, true);
+      } finally {
+        setSaving(false);
+      }
+    });
+
+    $('cancel').addEventListener('click', resetForm);
+    $('refresh').addEventListener('click', loadStudents);
+    $('search').addEventListener('input', renderRows);
+    $('departmentFilter').addEventListener('change', renderRows);
+
+    loadStudents();
+  </script>
+</body>
+</html>

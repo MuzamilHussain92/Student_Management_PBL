@@ -1,0 +1,203 @@
+{
+  "info": {
+    "_postman_id": "eb3676f1-f314-4e4b-856f-691d09c56d9b",
+    "name": "Management CRUD API - PBL",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "59587147",
+    "_collection_link": "https://go.postman.co/collection/59587147-eb3676f1-f314-4e4b-856f-691d09c56d9b?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "TC-01 Create Student",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Ali Ahmed\",\r\n  \"rollNo\": \"K26SW001\",\r\n  \"department\": \"Software Engineering\",\r\n  \"semester\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/students",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "students"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-02 Get All Students",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/students",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "students"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-03 Get Student by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/students/5",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "students",
+            "5"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-04 Update Student",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "\r\n{\r\n  \"name\": \"Ali Ahmed\",\r\n  \"rollNo\": \"K26SW001\",\r\n  \"department\": \"Software Engineering\",\r\n  \"semester\": 2\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/students/5",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "students",
+            "5"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-05 Delete Student",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/students/5",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "students",
+            "5"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-06 Verify Deleted Student",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/students/5",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "students",
+            "5"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-07 Missing Required Fields",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "\r\n{\r\n  \"name\": \"Ahmed Khan\",\r\n  \"semester\": 3\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/students",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "students"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-08 Nonexistent Student ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/students/99999",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "students",
+            "99999"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
